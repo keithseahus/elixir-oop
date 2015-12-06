@@ -125,8 +125,12 @@ defmodule OOP do
     defmethod!(name, block)
   end
 
-  defmacro def({ name, _, params }, do: block) do
+  defmacro def({ name, _, params }, do: block) when is_list(params) do
     defmethod!(name, params, block)
+  end
+
+  defmacro def({ name, _, param }, do: block) do
+    defmethod!(name, [param], block)
   end
 
   defmacro defp({ :when, _, [{ name, _, params }|guards] }, do: block) do
@@ -137,8 +141,12 @@ defmodule OOP do
     defmethodp!(name, block)
   end
 
-  defmacro defp({ name, _, params }, do: block) do
+  defmacro defp({ name, _, params }, do: block) when is_list(params) do
     defmethodp!(name, params, block)
+  end
+
+  defmacro defp({ name, _, param }, do: block) do
+    defmethodp!(name, [param], block)
   end
 
   defmacro @({ attr, _, nil }) do
