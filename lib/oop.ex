@@ -22,7 +22,7 @@ defmodule OOP do
         end
 
         Kernel.def inspect({ name, pid }) do
-          pid = pid_to_list(pid.to_pid)
+          pid = :erlang.pid_to_list(pid.to_pid)
           "#<#{String.replace(to_string(name), ~r/^Elixir\./, "")}:#{Enum.slice(pid, 1, Enum.count(pid) - 2)}>"
         end
 
