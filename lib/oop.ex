@@ -23,7 +23,7 @@ defmodule OOP do
 
         Kernel.def inspect({ name, pid }) do
           pid = pid_to_list(pid.to_pid)
-          "#<#{String.replace(to_string(name), %r/^Elixir\./, "")}:#{Enum.slice(pid, 1, Enum.count(pid) - 2)}>"
+          "#<#{String.replace(to_string(name), ~r/^Elixir\./, "")}:#{Enum.slice(pid, 1, Enum.count(pid) - 2)}>"
         end
 
         Kernel.def inspect(_, obj), do: obj.inspect
@@ -284,11 +284,11 @@ defmodule OOP do
   end
 
   Kernel.defp defreader!(name) do
-    defmethod!(name, Code.string_to_quoted!("@" <> atom_to_binary(name)))
+    defmethod!(name, Code.string_to_quoted!("@" <> to_string(name)))
   end
 
   Kernel.defp defwriter!(name) do
-    defmethod!(name, [{:value,[],nil}], Code.string_to_quoted!("@" <> atom_to_binary(name) <> "(value)"))
+    defmethod!(name, [{:value,[],nil}], Code.string_to_quoted!("@" <> to_string(name) <> "(value)"))
   end
 
   Kernel.defp defaccessor!(name) do
@@ -301,10 +301,10 @@ defmodule OOP do
   Kernel.def new_server(dict) do
     receive do
       { pid, { attr, val } } ->
-        pid <- { Kernel.self, val }
+        send pid, { Kernel.self, val }
         new_server HashDict.put dict, attr, val
       { pid, attr } ->
-        pid <- { Kernel.self, HashDict.get(dict, attr) }
+        send pid, { Kernel.self, HashDict.get(dict, attr) }
         new_server(dict)
     end
   end
@@ -318,7 +318,7 @@ defmodule OOP do
   end
 
   Kernel.defp transform({ sym, line, r = [_|_] }) do
-    { sym, line, Enum.map(r, transform(&1)) }
+    { sym, line, Enum.map(r, transform(&(&1))) }
   end
 
   Kernel.defp transform(x), do: x
